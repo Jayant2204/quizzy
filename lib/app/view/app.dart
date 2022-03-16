@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:quizzy/app/router/router.dart';
-import 'package:quizzy/l10n/l10n.dart';
 import 'package:quizzy/services/services.dart';
 
 class App extends StatelessWidget {
@@ -20,10 +19,8 @@ class App extends StatelessWidget {
     return MaterialApp.router(
       theme: ThemeData.dark(),
       localizationsDelegates: const [
-        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
       routerDelegate: router.routerDelegate,
       routeInformationParser: router.routeInformationParser,
       builder: (context, child) => MultiRepositoryProvider(
