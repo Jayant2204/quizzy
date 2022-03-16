@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quizzy/quiz/bloc/quiz_bloc.dart';
-import 'package:quizzy/quiz/models/quiz_model.dart';
+import 'package:quizzy/quiz/views/question/widgets/question_page_view.dart';
 import 'package:quizzy/services/services.dart';
 
-class QuestionPage extends StatefulWidget {
+class QuestionPage extends StatelessWidget {
   const QuestionPage({Key? key}) : super(key: key);
 
-  @override
-  State<QuestionPage> createState() => _QuestionPageState();
-}
-
-class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -21,60 +17,30 @@ class _QuestionPageState extends State<QuestionPage> {
       )..add(LoadApiEvent()),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Question'),
+          title: const Text('Quizzy'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'),
+          ),
         ),
         body: BlocBuilder<QuizBloc, QuizState>(
           builder: (context, QuizState state) {
             if (state is QuizLoadedState) {
-              return _QuestionsView(questions: state.questions);
+              return QuestionPageView(questions: state.questions);
             } else if (state is QuizLoadingState) {
               return const Center(child: CircularProgressIndicator());
+            } else if (state is QuizErrorState) {
+              return Column(
+                children: [
+                  const Center(child: Text('Error loading questions')),
+                  Center(child: Text(state.error)),
+                ],
+              );
             } else {
-              return const Center(child: Text('Error'));
+              return const Center(child: Text('Unknown state'));
             }
           },
         ),
-      ),
-    );
-  }
-}
-
-class _QuestionsView extends StatefulWidget {
-  const _QuestionsView({Key? key, required this.questions}) : super(key: key);
-
-  final List<Question> questions;
-
-  @override
-  State<_QuestionsView> createState() => __QuestionsViewState();
-}
-
-class __QuestionsViewState extends State<_QuestionsView> {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (context, index) => _QuestionItem(
-        question: widget.questions[index],
-      ),
-    );
-  }
-}
-
-class _QuestionItem extends StatelessWidget {
-  const _QuestionItem({Key? key, required this.question}) : super(key: key);
-
-  final Question question;
-
-  @override
-  Widget build(BuildContext context) {
-    final options = <String>[];
-    options.addAll(question.incorrectAnswers);
-    options.add(question.correctAnswer);
-    options.shuffle();
-    return ListTile(
-      title: Text(question.question),
-      subtitle: Column(
-        children:
-            List.generate(options.length, (index) => Text(options[index])),
       ),
     );
   }

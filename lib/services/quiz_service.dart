@@ -6,11 +6,15 @@ import 'package:quizzy/quiz/models/quiz_model.dart';
 class QuizService {
   Future<QuizQuestions> getQuizQuestions() async {
     try {
-      final response = await Dio().get<Map<String, dynamic>>(
+      final response = await Dio().get<Object?>(
         'https://opentdb.com/api.php?amount=10&type=multiple',
       );
-      return QuizQuestions.fromJson(response.data!);
-    } on Exception catch (e) {
+
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        return QuizQuestions.fromJson(response.data! as Map<String, dynamic>);
+      }
+      throw Exception('Failed to load Quiz Questions');
+    } catch (e) {
       log('Error while fetching quiz questions $e');
       rethrow;
     }

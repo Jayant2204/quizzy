@@ -13,3 +13,8 @@ class QuizLoadedState extends QuizState {
 class QuizSubmittedState extends QuizState {}
 
 class HomeNoInternetState extends QuizState {}
+
+class QuizErrorState extends QuizState {
+  QuizErrorState({required this.error});
+  final String error;
+}

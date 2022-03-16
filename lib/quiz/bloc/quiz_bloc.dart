@@ -11,7 +11,7 @@ part 'quiz_state.dart';
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   QuizBloc(this._quizService, this._connectivityService)
       : super(QuizLoadingState()) {
-    _connectivityService.connectivityStream.stream.listen((event) {
+    _connectivityService.connectivityStream.listen((event) {
       if (event == ConnectivityResult.none) {
         add(NoInternetEvent());
       } else {
@@ -20,9 +20,12 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     });
     on<LoadApiEvent>((event, emit) async {
       emit(QuizLoadingState());
-
-      final quizQuestions = await _quizService.getQuizQuestions();
-      emit(QuizLoadedState(questions: quizQuestions.questions));
+      try {
+        final quizQuestions = await _quizService.getQuizQuestions();
+        emit(QuizLoadedState(questions: quizQuestions.questions));
+      } catch (e) {
+        emit(QuizErrorState(error: e.toString()));
+      }
     });
     on<SubmitQuiz>((event, emit) {
       emit(QuizSubmittedState());
